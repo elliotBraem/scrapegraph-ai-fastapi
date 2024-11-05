@@ -1,0 +1,11 @@
+{
+  "name": "web-scraper",
+  "version": "1.0.0",
+  "scripts": {
+    "docker:build": "docker build -t web-scraper .",
+    "docker:dev": "docker run -it --rm -p 8000:8000 -v ${PWD}:/app -v /app/node_modules web-scraper",
+    "dev": "npm run docker:build && npm run docker:dev",
+    "docker:stop": "docker stop $(docker ps -q --filter ancestor=web-scraper)",
+    "docker:clean": "docker system prune -f"
+  }
+}
