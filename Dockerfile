@@ -1,5 +1,5 @@
 FROM python:3.10
-FROM mcr.microsoft.com/playwright/python:v1.45.1-jammy
+FROM mcr.microsoft.com/playwright/python:v1.48.0-jammy
 
 WORKDIR /code
 
@@ -10,6 +10,7 @@ RUN pip install scrapegraphai[burr]
 RUN pip install fastapi[standard]
 
 COPY ./app /code/app
+COPY .env /code/.env
 
 EXPOSE 8000
 

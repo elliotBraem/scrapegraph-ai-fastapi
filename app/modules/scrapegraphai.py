@@ -66,10 +66,14 @@ class ScrapeGraphAiEngine:
             "verbose": True,
         }
 
+        # Include provider in the model string
+        model_string = f"{self.model_provider}/{self.model_name}"
+
         if self.model_provider == "google_genai":
             graph_config["llm"] = {
-                "model": self.model_name,
-                "api_key": os.environ["GOOGLE_API_KEY"]
+                "model": model_string,
+                "api_key": os.environ["GOOGLE_API_KEY"],
+                "temperature": self.temperature
             }
             if os.getenv("GOOGLE_API_ENDPOINT"):
                 graph_config["llm"]["transport"] = "rest"
@@ -77,12 +81,11 @@ class ScrapeGraphAiEngine:
 
         else:
             graph_config["llm"] = {
-                "model": self.model_name,
-                "api_key": os.getenv("API_KEY")
+                "model": model_string,
+                "api_key": os.getenv("API_KEY"),
+                "temperature": self.temperature
             }
             if os.getenv("API_BASE_URL"):
                 graph_config["llm"]["base_url"] = os.getenv("API_BASE_URL")
 
         return graph_config
-
-

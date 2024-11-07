@@ -134,4 +134,3 @@ Or you can publish to [Render](https://render.com/)
 
 ## Known issues
 > The current support for models is not perfect, and there are quite a few such problems in [Scrapegraph-ai](https://github.com/ScrapeGraphAI/Scrapegraph-ai/issues).
-
