@@ -1,7 +1,9 @@
-from scrapegraphai.graphs import SmartScraperGraph, SearchGraph
+from scrapegraphai.graphs import SmartScraperMultiGraph, SearchGraph
 import os
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
+from typing import Optional, List
+from pydantic import BaseModel
 
 executor = ThreadPoolExecutor()
 
@@ -33,12 +35,14 @@ class ScrapeGraphAiEngine:
     async def crawl(
             self,
             prompt: str,
-            source: str
+            sources: List[str],
+            schema: Optional[BaseModel] = None
     ):
-        smart_scraper_graph = SmartScraperGraph(
+        smart_scraper_graph = SmartScraperMultiGraph(
             prompt=prompt,
-            source=source,
-            config=self.graph_config
+            source=sources,
+            config=self.graph_config,
+            schema=schema
         )
 
         result = await run_blocking_code_in_thread(smart_scraper_graph.run)

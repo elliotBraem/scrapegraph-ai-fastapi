@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Body
-from typing import Optional
+from typing import Optional, List
 from app.modules import ScrapeGraphAiEngine
 from pydantic import BaseModel
 
@@ -9,10 +9,11 @@ router = APIRouter(
 
 class CrawlRequest(BaseModel):
     prompt: str
-    url: str
+    urls: List[str]
     provider: str
     llm_model: str
     temperature: Optional[float] = 0.0
+    schema: Optional[BaseModel] = None
 
 @router.post("/scraper_graph")
 async def scraper_graph(request: CrawlRequest):
@@ -21,7 +22,11 @@ async def scraper_graph(request: CrawlRequest):
         model_name=request.llm_model,
         temperature=request.temperature
     )
-    return await engine.crawl(prompt=request.prompt, source=request.url)
+    return await engine.crawl(
+        prompt=request.prompt, 
+        sources=request.urls,
+        schema=request.schema
+    )
 
 @router.post("/search_graph")
 async def search_graph(
