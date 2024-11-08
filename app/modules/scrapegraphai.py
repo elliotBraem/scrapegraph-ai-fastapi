@@ -1,18 +1,9 @@
 from scrapegraphai.graphs import SmartScraperMultiGraph, SearchGraph
 import os
-import asyncio
-from concurrent.futures import ThreadPoolExecutor
 from typing import Optional, List
 from pydantic import BaseModel
-
-executor = ThreadPoolExecutor()
-
-import nest_asyncio
-
-async def run_blocking_code_in_thread(blocking_func, *args):
-    loop = asyncio.get_event_loop()
-    return await loop.run_in_executor(executor, blocking_func, *args)
-
+import asyncio
+from functools import partial
 
 class ScrapeGraphAiEngine:
     """
@@ -28,9 +19,9 @@ class ScrapeGraphAiEngine:
         self.model_provider = model_provider
         self.model_name = model_name
         self.temperature = temperature
-
         self.model_tokens = 128000
         self.graph_config = self.create_model_instance_config()
+        self._lock = asyncio.Lock()
 
     async def crawl(
             self,
@@ -38,6 +29,7 @@ class ScrapeGraphAiEngine:
             sources: List[str],
             schema: Optional[BaseModel] = None
     ):
+        # Create graph instance with proper configuration
         smart_scraper_graph = SmartScraperMultiGraph(
             prompt=prompt,
             source=sources,
@@ -45,21 +37,34 @@ class ScrapeGraphAiEngine:
             schema=schema
         )
 
-        result = await run_blocking_code_in_thread(smart_scraper_graph.run)
+        # Run the graph in the default event loop
+        async with self._lock:  # Ensure thread-safe access to shared resources
+            loop = asyncio.get_running_loop()
+            # Use partial to create a callable that doesn't require arguments
+            func = partial(smart_scraper_graph.run)
+            # Run the blocking operation in the default loop
+            result = await loop.run_in_executor(None, func)
+            
         return result
 
     async def search(
             self,
             prompt: str,
     ):
-        nest_asyncio.apply()
-
+        # Create search graph instance
         search_graph = SearchGraph(
             prompt=prompt,
             config=self.graph_config
         )
 
-        result = search_graph.run()
+        # Run the search in the default event loop
+        async with self._lock:  # Ensure thread-safe access to shared resources
+            loop = asyncio.get_running_loop()
+            # Use partial to create a callable that doesn't require arguments
+            func = partial(search_graph.run)
+            # Run the blocking operation in the default loop
+            result = await loop.run_in_executor(None, func)
+            
         return result
 
     def create_model_instance_config(

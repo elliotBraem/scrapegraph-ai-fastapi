@@ -1,136 +1,86 @@
-# ScrapeGraphAI FastAPI Framework
+<!-- markdownlint-disable MD014 -->
+<!-- markdownlint-disable MD033 -->
+<!-- markdownlint-disable MD041 -->
+<!-- markdownlint-disable MD029 -->
 
-Project base on [ScrapeGraphAI](https://github.com/ScrapeGraphAI/Scrapegraph-ai.git), and use FastAPI to provide interface services externally.
+<div align="center">
 
-## Install
+<h1 style="font-size: 2.5rem; font-weight: bold;">AI-rachnid (Web Scraper)</h1>
 
-```shell
-pip install -r requirements.txt
-# Browser driver install
-playwright install
-# If prompted "ImportError: burr package is not installed. Please install it with 'pip install scrapegraphai[burr]'"
-pip install scrapegraphai[burr]
-# If prompted RuntimeError: To use the fastapi command, please install "fastapi[standard]"
-pip install "fastapi[standard]"
-```
+  <p>
+    <strong><a href="https://fastapi.tiangolo.com/"  target="_blank">FastAPI</a> for efficient, AI-driven web scraping using <a href="https://github.com/ScrapeGraphAI/Scrapegraph-ai" target="_blank">Scrapegraph-ai</a></strong>
+  </p>
 
-## Environment
-Edit `.env` file, Due to the special nature of the Gemini model, it is configured separately. Other models are configurable via `API_KEY` and `API_BASE_URL`
+</div>
 
-```
+<details>
+  <summary>Table of Contents</summary>
+
+- [Getting Started](#getting-started)
+  - [Environment Setup](#environment-setup)
+  - [Running with Docker](#running-with-docker)
+  - [Available Models](#available-models)
+- [Contributing](#contributing)
+
+</details>
+
+## Getting Started
+
+### Environment Setup
+
+Copy `.env.example` to `.env` and configure your API keys. Due to the special nature of the Gemini model, it is configured separately. Other models are configurable via `API_KEY` and `API_BASE_URL`.
+
+```cmd
 GOOGLE_API_KEY=
 GOOGLE_API_ENDPOINT=
 API_KEY=
 API_BASE_URL=
 ```
 
-## Run
-It's important to note that you can't start in `dev` mode, as playwright will fail in `dev` mode, Otherwise, it will be reported as a "NotImplementedError" error.
-```shell
-fastapi run app/main.py
-```
+### Running with Docker
 
-## Use
+Ensure you have a [Docker](https://www.docker.com/) instance running. For MacOS, I recommend using [OrbStack](https://orbstack.dev).
 
-> The project use langchain init_chat_model function to initialize a ChatModel from the model name and provider, you can find them by langchain website [init_chat_model](https://api.python.langchain.com/en/latest/chat_models/langchain.chat_models.base.init_chat_model.html)
+Available commands:
 
-### Gemini Model
+- `npm run docker:build` - Build the Docker image
+- `npm run docker:dev` - Run the container in development mode
+- `npm run dev` - Build and run in one command
+- `npm run docker:stop` - Stop running containers
+- `npm run docker:clean` - Clean up Docker resources
 
-You need to set  `GOOGLE_API_KEY` or `GOOGLE_API_ENDPOINT`  in `.env` file first. If you set `GOOGLE_API_ENDPOINT` , it will be configured into the Gemini model.
+### Available Models
 
-#### scraper graph
+The API supports multiple model providers and models, using langchain's `init_chat_model`.
 
-```shell
-curl -X POST https://your-domain/crawl/scraper_graph \
--H "Content-Type: application/json" \
--d '{
-    "prompt": "List me all the articles with their title、description、link、published",
-    "url": "https://techcrunch.com/category/artificial-intelligence/",
-    "model_provider": "google_genai",
-    "model_name": "google_genai/gemini-1.5-flash-latest",
-    "temperature": 0
-}'
+- Google Gemini
+  - Provider: `google_genai`
+  - Model: `google_genai/gemini-1.5-flash-latest` // or other model
+  - Requires: `GOOGLE_API_KEY` or `GOOGLE_API_ENDPOINT` in `.env`
 
-```
+- OpenAI
+  - Provider: `openai`
+  - Model: `gpt-4o-mini` // or other model
+  - Requires: `API_KEY` or `API_BASE_URL` in `.env`
 
-#### search graph
+- Ollama
+  - Provider: `ollama`
+  - Model: `ollama/llama3.1` // or other model
 
-```shell
-curl -X POST https://your-domain/crawl/search_graph \
--H "Content-Type: application/json" \
--d '{
-    "prompt": "List me all the traditional recipes from Chioggia",
-    "model_provider": "google_genai",
-    "model_name": "google_genai/gemini-1.5-flash-latest",
-    "temperature": 0
-}'
-```
+You can find more supported models on the langchain website [init_chat_model](https://api.python.langchain.com/en/latest/chat_models/langchain.chat_models.base.init_chat_model.html).
 
-### OpenAI Model
+## Contributing
 
-You need to set  `API_KEY` or `API_BASE_URL`  in `.env` file first. If you set `API_BASE_URL` , it will be configured into the OpenAI model.
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
 
-#### scraper graph
+If you're interested in contributing to this project, please read the [contribution guide](./CONTRIBUTING).
 
-```shell
-curl -X POST https://your-domain/crawl/scraper_graph \
--H "Content-Type: application/json" \
--d '{
-    "prompt": "List me all the articles with their title、description、link、published",
-    "url": "https://techcrunch.com/category/artificial-intelligence/",
-    "model_provider": "openai",
-    "model_name": "gpt-4o-mini",
-    "temperature": 0
-}'
-```
-
-#### search graph
-
-```shell
-curl -X POST https://your-domain/crawl/search_graph \
--H "Content-Type: application/json" \
--d '{
-    "prompt": "List me all the traditional recipes from Chioggia",
-    "model_provider": "openai",
-    "model_name": "gpt-4o-mini",
-    "temperature": 0
-}'
-```
-
-### Ollama
-
-#### scraper graph
-
-```shell
-curl -X POST https://your-domain/crawl/scraper_graph \
--H "Content-Type: application/json" \
--d '{
-    "prompt": "List me all the articles with their title、description、link、published",
-    "url": "https://next.ithome.com/",
-    "model_provider": "ollama",
-    "model_name": "ollama/llama3.1",
-    "temperature": 0
-}'
-```
-
-#### search graph
-
-```shell
-curl -X POST https://your-domain/crawl/search_graph \
--H "Content-Type: application/json" \
--d '{
-    "prompt": "List me all the traditional recipes from Chioggia",
-    "model_provider": "ollama",
-    "model_name": "ollama/llama3.1",
-    "temperature": 0
-}'
-```
-
-## Docker
-
-`Dockerfile` introduce `mcr.microsoft.com/playwright/python:v1.45.1-jammy` provide a `playwright` environment. So we don't need to install any more.
-
-Or you can publish to [Render](https://render.com/)
-
-## Known issues
-> The current support for models is not perfect, and there are quite a few such problems in [Scrapegraph-ai](https://github.com/ScrapeGraphAI/Scrapegraph-ai/issues).
+<div align="right">
+<a href="https://nearbuilders.org" target="_blank">
+<img
+  src="https://builders.mypinata.cloud/ipfs/QmWt1Nm47rypXFEamgeuadkvZendaUvAkcgJ3vtYf1rBFj"
+  alt="Near Builders"
+  height="40"
+/>
+</a>
+</div>
