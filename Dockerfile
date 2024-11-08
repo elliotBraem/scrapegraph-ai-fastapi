@@ -11,10 +11,6 @@ RUN pip install fastapi[standard]
 
 COPY ./app /code/app
 
-# Copy .env file only if it exists (won't fail if missing)
-# set in local dev, but use env variables in production
-COPY .env* /code/ 2>/dev/null || true
-
 EXPOSE 8000
 
 CMD ["fastapi", "run", "app/main.py", "--port", "8000"]
