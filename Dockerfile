@@ -10,7 +10,15 @@ RUN pip install scrapegraphai[burr]
 RUN pip install fastapi[standard]
 
 COPY ./app /code/app
-COPY .env /code/.env
+
+# Conditionally copy .env file only in development
+RUN if [ "$ENVIRONMENT" = "development" ]; then \
+        echo "Development environment - will copy .env file"; \
+    else \
+        echo "Production environment - skipping .env file"; \
+    fi
+
+COPY .env* /code/.env 2>/dev/null || true
 
 EXPOSE 8000
 
