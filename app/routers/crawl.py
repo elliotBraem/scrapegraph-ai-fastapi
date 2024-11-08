@@ -1,18 +1,17 @@
 from fastapi import APIRouter, Body
 from typing import Optional, List
 from app.modules import ScrapeGraphAiEngine
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 router = APIRouter(
     prefix="/crawl"
 )
-
 class CrawlRequest(BaseModel):
     prompt: str
     urls: List[str]
-    provider: str
-    llm_model: str
-    temperature: Optional[float] = 0.0
+    provider: str = Field(default="openai", description="AI model provider")
+    llm_model: str = Field(default="gpt-4o-mini", description="Language model to use")
+    temperature: Optional[float] = Field(default=0.0, description="Model temperature")
     schema: Optional[BaseModel] = None
 
 @router.post("/scraper_graph")
