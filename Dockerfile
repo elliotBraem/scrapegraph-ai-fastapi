@@ -11,14 +11,9 @@ RUN pip install fastapi[standard]
 
 COPY ./app /code/app
 
-# Conditionally copy .env file only in development
-RUN if [ "$ENVIRONMENT" = "development" ]; then \
-        echo "Development environment - will copy .env file"; \
-    else \
-        echo "Production environment - skipping .env file"; \
-    fi
-
-COPY .env* /code/.env 2>/dev/null || true
+# Copy .env file only if it exists (won't fail if missing)
+# set in local dev, but use env variables in production
+COPY .env /code/.env 2>/dev/null || exit 0
 
 EXPOSE 8000
 
