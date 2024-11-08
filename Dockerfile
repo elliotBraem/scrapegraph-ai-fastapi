@@ -13,7 +13,7 @@ COPY ./app /code/app
 
 # Copy .env file only if it exists (won't fail if missing)
 # set in local dev, but use env variables in production
-COPY .env /code/.env 2>/dev/null || exit 0
+COPY .env* /code/ 2>/dev/null || true
 
 EXPOSE 8000
 
