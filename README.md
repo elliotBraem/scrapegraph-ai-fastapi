@@ -13,6 +13,9 @@
 
 </div>
 
+> [!NOTE]  
+> This project is a fork of [scrapegraph-ai-fastapi](https://github.com/lrbmike/scrapegraph-ai-fastapi), fixed and adapted to support multi page scraping.
+
 <details>
   <summary>Table of Contents</summary>
 
